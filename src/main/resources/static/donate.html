@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>기부하기</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      background: linear-gradient(to bottom right, #f0f8ff, #e0f7fa);
+      margin: 0;
+      padding: 40px 0;
+      display: flex;
+      justify-content: center;
+    }
+
+    .container {
+      background-color: white;
+      padding: 50px 60px;
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      max-width: 900px;
+      width: 90%;
+      text-align: center;
+      min-height: 70vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    h1 {
+      font-size: 28px;
+      margin-bottom: 36px;
+      color: #333;
+    }
+
+    .step {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 14px 0;
+    }
+
+    .step .main-btn {
+      flex-grow: 1;
+      padding: 12px;
+      font-size: 16px;
+      margin-right: 10px;
+    }
+
+    .check-btn {
+      width: 40px;
+      height: 40px;
+      font-size: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: white;
+      border: 2px solid #ccc;
+      color: #ccc;
+      border-radius: 6px;
+      cursor: default;
+      transition: all 0.3s ease;
+    }
+
+    .check-btn:enabled {
+      background-color: #4facfe;
+      border-color: #4facfe;
+      color: white;
+      cursor: pointer;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0 20px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      box-sizing: border-box;
+    }
+
+    button {
+      font-size: 16px;
+      padding: 12px;
+      background: linear-gradient(to right, #4facfe, #00f2fe);
+      border: none;
+      border-radius: 8px;
+      color: white;
+      font-weight: bold;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      transition: transform 0.2s ease, box-shadow 0.3s ease;
+      cursor: pointer;
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+      background: linear-gradient(to right, #43e97b, #38f9d7);
+    }
+
+    #centerList {
+      max-height: 200px;
+      overflow-y: auto;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      margin-top: 10px;
+      text-align: left;
+    }
+
+    #centerList div {
+      padding: 10px;
+      border-bottom: 1px solid #eee;
+      cursor: pointer;
+    }
+
+    #centerList div:hover {
+      background-color: #f0f0f0;
+    }
+
+    #addressInput, #centerSelectBox {
+      margin: 10px 0 30px;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <img src="rewear 로고.png" alt="RE:WEAR 로고" style="width:180px; margin: 0 auto 20px;">
+  <h1>기부하기</h1>
+
+  <div class="step">
+    <button class="main-btn" id="step1">📦 박스 배송 요청</button>
+    <button class="check-btn" id="checkStep1" disabled>✅</button>
+  </div>
+
+  <div class="step">
+    <button class="main-btn" id="step2" disabled>🏠 주소 입력</button>
+    <button class="check-btn" id="confirmAddress" disabled>✅</button>
+  </div>
+  <div id="addressInput" class="hidden">
+    <input type="text" id="addressField" placeholder="주소를 입력하세요">
+    <button id="addressDoneBtn" type="button" style="margin-top:10px; width:100%; font-size:16px; background: linear-gradient(to right, #4facfe, #00f2fe); border:none; border-radius:8px; color:white; font-weight:bold;">주소 입력 완료</button>
+  </div>
+
+  <div class="step">
+    <button class="main-btn" id="step3" disabled>🎁 포장 완료</button>
+    <button class="check-btn" id="confirmPack" disabled>✅</button>
+  </div>
+
+  <div class="step">
+    <button class="main-btn" id="step4" disabled>📍 기부처 선택</button>
+    <button class="check-btn" id="confirmCenter" disabled>✅</button>
+  </div>
+  <div id="centerSelectBox" class="hidden">
+    <div id="centerList"></div>
+  </div>
+
+  <div class="step">
+    <button class="main-btn" id="step5" disabled>✅ 기부 완료</button>
+    <button class="check-btn" disabled>✅</button>
+  </div>
+</div>
+
+<script>
+  const userId = localStorage.getItem("userId");
+  if (!userId) {
+    alert("로그인이 필요합니다.");
+    location.href = "login.html";
+  }
+
+  const step2 = document.getElementById("step2");
+  const step3 = document.getElementById("step3");
+  const step4 = document.getElementById("step4");
+  const step5 = document.getElementById("step5");
+
+  const confirmAddress = document.getElementById("confirmAddress");
+  const confirmPack = document.getElementById("confirmPack");
+  const confirmCenter = document.getElementById("confirmCenter");
+
+  const addressInput = document.getElementById("addressInput");
+  const addressField = document.getElementById("addressField");
+
+  document.getElementById("step1").addEventListener("click", () => {
+    const boxCount = prompt("📦 신청할 박스 수량을 입력하세요:", "1");
+    const count = parseInt(boxCount);
+    if (isNaN(count) || count <= 0) return alert("올바른 숫자를 입력하세요.");
+    localStorage.setItem("donationBoxCount_" + userId, count);
+    alert(`${count}개의 박스를 신청하셨습니다.`);
+    document.getElementById("checkStep1").disabled = false;
+    step2.disabled = false;
+  });
+
+  step2.addEventListener("click", () => {
+    addressInput.classList.remove("hidden");
+  });
+
+  document.getElementById("addressDoneBtn").addEventListener("click", () => {
+    const addr = addressField.value.trim();
+    if (!addr) return alert("주소를 입력해주세요.");
+    localStorage.setItem("donationAddress_" + userId, addr);
+    addressInput.classList.add("hidden");
+    confirmAddress.disabled = false;
+    confirmPack.disabled = false;
+    step3.disabled = false;
+  });
+
+  step3.addEventListener("click", () => {
+    localStorage.setItem("packed_" + userId, "Y");
+    alert("🎁 포장이 완료되었습니다!");
+    confirmPack.disabled = false;
+    step4.disabled = false;
+    confirmCenter.disabled = false;
+  });
+
+  step4.addEventListener("click", () => {
+    fetch('/centers')
+      .then(res => res.json())
+      .then(centers => {
+    if (centers.length === 0) return alert("등록된 기부처가 없습니다.");
+
+    const listBox = document.getElementById("centerList");
+    const selectBox = document.getElementById("centerSelectBox");
+    selectBox.classList.remove("hidden");
+    listBox.innerHTML = "";
+
+    centers.forEach(center => {
+      const div = document.createElement("div");
+      div.textContent = `📍 ${center.name} (${center.phone})`;
+      div.addEventListener("click", () => {
+        localStorage.setItem("selectedCenter_" + userId, JSON.stringify(center));
+        alert(`✅ '${center.name}' 선택됨`);
+        selectBox.classList.add("hidden");
+        step5.disabled = false;
+      });
+      listBox.appendChild(div);
+        });
+    });
+  });
+
+  step5.addEventListener("click", () => {
+    const boxCount = localStorage.getItem("donationBoxCount_" + userId);
+
+    const donation = {
+      date: new Date().toISOString().split("T")[0],
+      address: localStorage.getItem("donationAddress_" + userId),
+      centerName: JSON.parse(localStorage.getItem("selectedCenter_" + userId)).name,
+      phone: JSON.parse(localStorage.getItem("selectedCenter_" + userId)).phone,
+      boxCount: boxCount || 1
+    };
+
+    const old = JSON.parse(localStorage.getItem("donations_" + userId)) || [];
+    old.push(donation);
+    localStorage.setItem("donations_" + userId, JSON.stringify(old));
+    alert("🎉 기부가 완료되었습니다!");
+    location.href = "status.html";
+  });
+</script>
+</body>
+</html>

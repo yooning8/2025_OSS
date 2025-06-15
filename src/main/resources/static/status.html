@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>기부 현황 조회</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      background: linear-gradient(to bottom right, #f0f8ff, #e0f7fa);
+      margin: 0;
+      padding: 40px 0;
+      display: flex;
+      justify-content: center;
+    }
+
+    .container {
+      background-color: white;
+      padding: 50px 60px;
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      max-width: 900px;
+      width: 90%;
+      text-align: center;
+    }
+
+    h1 {
+      margin-bottom: 30px;
+      font-size: 28px;
+      color: #333;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    th, td {
+      padding: 14px 10px;
+      border-bottom: 1px solid #ddd;
+      text-align: center;
+    }
+
+    th {
+      background-color: #f0f8ff;
+      font-weight: bold;
+      color: #222;
+    }
+
+    tr:hover {
+      background-color: #f9f9f9;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <img src="rewear 로고.png" alt="RE:WEAR 로고" style="width:180px; margin: 0 auto 20px;">
+  <h1>기부 현황 조회</h1>
+  <table>
+    <thead>
+    <tr>
+      <th>기부일자</th>
+      <th>센터명</th>
+      <th>주소</th>
+      <th>전화번호</th>
+      <th>박스 수량</th>
+    </tr>
+    </thead>
+    <tbody id="donationTableBody">
+    <!-- 기부 내역이 여기에 표시됩니다 -->
+    </tbody>
+  </table>
+</div>
+
+<script>
+  const userId = localStorage.getItem("userId");
+  if (!userId) {
+    alert("로그인이 필요합니다.");
+    location.href = "login.html";
+  }
+
+  const donations = JSON.parse(localStorage.getItem("donations_" + userId)) || [];
+  const tbody = document.getElementById("donationTableBody");
+
+  if (donations.length === 0) {
+    const row = document.createElement("tr");
+    row.innerHTML = `<td colspan="5" style="text-align:center;">기부 내역이 없습니다.</td>`;
+    tbody.appendChild(row);
+  } else {
+    donations.forEach(donation => {
+      const row = document.createElement("tr");
+      row.innerHTML = `
+        <td>${donation.date || "날짜 없음"}</td>
+        <td>${donation.centerName}</td>
+        <td>${donation.address}</td>
+        <td>${donation.phone}</td>
+        <td>${donation.boxCount || "-"}</td>
+      `;
+      tbody.appendChild(row);
+    });
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>마이페이지</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      background: linear-gradient(to bottom right, #f0f8ff, #e0f7fa);
+      margin: 0;
+      padding: 40px 0;
+      display: flex;
+      justify-content: center;
+    }
+
+    .container {
+      background-color: white;
+      padding: 50px 60px;
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      max-width: 600px;
+      width: 90%;
+      text-align: center;
+      min-height: 70vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    h1 {
+      margin-bottom: 30px;
+      font-size: 28px;
+      color: #333;
+    }
+
+    .form-group {
+      text-align: left;
+      margin-bottom: 18px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: bold;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px;
+      margin-top: 6px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      box-sizing: border-box;
+      background-color: #f4f4f4;
+      color: #555;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <img src="rewear 로고.png" alt="RE:WEAR 로고" style="width:180px; margin: 0 auto 20px;">
+  <h1>마이페이지</h1>
+  <form id="profileForm">
+    <div class="form-group">
+      <label>아이디</label>
+      <input name="userId">
+    </div>
+
+    <div class="form-group">
+      <label>이름</label>
+      <input name="name">
+    </div>
+
+    <div class="form-group">
+      <label>이메일</label>
+      <input name="email">
+    </div>
+
+    <div class="form-group">
+      <label>주소</label>
+      <input name="address">
+    </div>
+
+    <div class="form-group">
+      <label>우편번호</label>
+      <input name="addressZipcode">
+    </div>
+  </form>
+  <button id="saveBtn" type="button" class="main-btn" style="margin:20px auto 0 auto; background: white; color:#222; width:25%; font-size:16px; padding:14px; border-radius:10px; font-weight:bold; box-shadow:0 4px 16px rgba(0,0,0,0.08); cursor:pointer; border:1px solid #ccc; display:block;">수정하기</button>
+</div>
+
+<script>
+  const userId = localStorage.getItem("userId");
+  if (!userId) {
+    alert("로그인이 필요합니다.");
+    location.href = "login.html";
+  }
+
+  const form = document.getElementById("profileForm");
+
+  function loadUserInfo() {
+    fetch('/users/info/' + userId)
+            .then(res => res.json())
+            .then(data => {
+              console.log("받은 데이터:", data);
+              form.userId.value = data.userId || '';
+              form.name.value = data.name || '';
+              form.email.value = data.email || '';
+              form.address.value = data.address || '';
+              form.addressZipcode.value = data.addressZipcode || '';
+            });
+  }
+
+  loadUserInfo();
+
+  document.getElementById("saveBtn").addEventListener("click", function() {
+    const formData = new FormData(form);
+    fetch('/users/info/' + form.userId.value, {
+      method: 'POST',
+      body: formData
+    })
+            .then(res => res.text())
+            .then(msg => alert(msg));
+  });
+</script>
+</body>
+</html>

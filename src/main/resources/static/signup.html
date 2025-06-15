@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>회원가입</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background: linear-gradient(to bottom right, #f0f8ff, #e0f7fa);
+            margin: 0;
+            padding: 40px 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            background-color: white;
+            padding: 50px 60px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+        }
+
+        h1 {
+            margin-bottom: 30px;
+            font-size: 28px;
+            color: #333;
+        }
+
+        .inline {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .inline input {
+            flex-grow: 1;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            box-sizing: border-box;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 12px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            box-sizing: border-box;
+        }
+
+        button {
+            font-size: 16px;
+            padding: 12px;
+            background: linear-gradient(to right, #4facfe, #00f2fe);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            transition: transform 0.2s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+            background: linear-gradient(to right, #43e97b, #38f9d7);
+        }
+
+        #checkDuplicate {
+            width: 100px;
+            white-space: nowrap;
+            padding: 10px;
+            margin-top: 0;
+        }
+
+        .link {
+            margin-top: 20px;
+            font-size: 14px;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <img src="rewear 로고.png" alt="RE:WEAR 로고" style="width:180px; margin: 0 auto 20px;">
+    <h1>회원가입</h1>
+    <form id="signupForm" method="post" action="/users/signup">
+        <div class="inline">
+            <input name="userId" placeholder="아이디 (4자 이상)" required>
+            <button type="button" id="checkDuplicate">중복확인</button>
+        </div>
+        <input name="email" placeholder="이메일 (예: user@example.com)" required>
+        <input name="password" type="password" placeholder="비밀번호 (6자 이상)" required>
+        <input name="passwordConfirm" type="password" placeholder="비밀번호 확인" required>
+        <input name="name" placeholder="이름" required>
+        <input name="address" placeholder="도로명 주소" required>
+        <input name="addressZipcode" placeholder="우편번호" required>
+        <button type="submit">가입하기</button>
+    </form>
+
+    <div class="link">
+        이미 계정이 있으신가요?<br>
+        <button onclick="location.href='login.html'" style="margin-top: 10px;">로그인</button>
+    </div>
+</div>
+
+<script>
+    let isUserIdChecked = false;
+
+    document.getElementById("checkDuplicate").addEventListener("click", () => {
+        const userId = document.querySelector("input[name='userId']").value.trim();
+        if (userId.length < 4) return alert("아이디는 4자 이상이어야 합니다.");
+
+        for (let key in localStorage) {
+            if (key === "userInfo_" + userId) {
+                isUserIdChecked = false;
+                return alert("❌ 이미 사용 중인 아이디입니다.");
+            }
+        }
+        isUserIdChecked = true;
+        alert("✅ 사용 가능한 아이디입니다.");
+    });
+
+    document.getElementById("signupForm").addEventListener("submit", function(e) {
+        const pw = document.querySelector("input[name='password']").value;
+        const pwc = document.querySelector("input[name='passwordConfirm']").value;
+        if (pw !== pwc) {
+            e.preventDefault();
+            alert("❌ 비밀번호가 일치하지 않습니다.");
+        }
+    });
+</script>
+</body>
+</html>
